@@ -1,1 +1,1 @@
-BASE_URL = "https://qa.openproject-edge.com"
+BASE_URL = "https://withlogicco.openproject.com/"
