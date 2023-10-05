@@ -1,12 +1,11 @@
 import httpx
-from openproject.auth import BasicAuth
 
 
 class Client:
-    def __init__(self, base_url: str, api_key: str):
+    def __init__(self, base_url: str, api_token: str):
         self.base_url = base_url
         self.api_version = "v3"
-        self.api_key = api_key
+        self.api_token = api_token
 
     def _handle_response(self, response: httpx.Response) -> httpx.Response:
         if response.status_code != 200:
@@ -18,11 +17,8 @@ class Client:
     def _send_request(
         self, method: str, url: str, params=None, data=None, **kwargs
     ) -> httpx.Response:
-        with httpx.Client(auth=BasicAuth("apikey", self.api_key)) as client:
-            response = client.request(
-                method, url, params=params, json=data, **kwargs
-            )
-            import pdb; pdb.set_trace()
+        with httpx.Client(auth=("apikey", self.api_token)) as client:
+            response = client.request(method, url, params=params, json=data, **kwargs)
             return self._handle_response(response)
 
 
