@@ -1,6 +1,5 @@
 import httpx
 from exceptions import APIError, AuthenticationError
-from constants import BASE_URL
 
 
 class Client:
@@ -39,13 +38,14 @@ class Client:
     ) -> httpx.Response:
         url = f"{self.base_url}/api/{self.api_version}/{endpoint}"
         with httpx.Client(auth=("apikey", self.api_token)) as client:
-            headers = {"Content-Type": "application/hal+json"}
-            response = client.request(
-                method, url, params=params, json=data, headers=headers, **kwargs
-            )
-            import pdb
+            if method == "DELETE":
+                headers = {"Content-Type": "application/hal+json"}
+                response = client.request(
+                    method, url, params=params, json=data, headers=headers, **kwargs
+                )
+                return self._handle_response(response)
 
-            pdb.set_trace()
+            response = client.request(method, url, params=params, json=data, **kwargs)
             return self._handle_response(response)
 
 
@@ -55,36 +55,77 @@ class SubClient(Client):
 
 
 class WorkPackages(SubClient):
-    _args_api_mapping = {
-        "project": "project",
-        "type": "type",
-        "subject": "subject",
-    }
-
     def list(self):
-        return self.client._send_request("GET", "/work_packages").json()
+        return self.client._send_request("GET", "/work_packages")
 
     def view(self, id: int):
-        return self.client._send_request("GET", f"/work_packages/{id}").json()
+        return self.client._send_request("GET", f"/work_packages/{id}")
 
-    def create(self, project: dict, type: dict, subject: str):
+    def _process_data(self, data):
         data = {
-            self._args_api_mapping.get("project"): project,
-            self._args_api_mapping.get("type"): type,
-            self._args_api_mapping.get("subject"): subject,
+            k: v
+            for k, v in data.items()
+            if v is not None and k != "self" and k != "kwargs"
         }
-        return self.client._send_request("POST", "/work_packages", data=data).json()
+        return data
 
-    def update(self, id: int, project: dict, type: dict, subject: str, notify: bool):
-        data = {
-            self._args_api_mapping.get("project"): project,
-            self._args_api_mapping.get("type"): type,
-            self._args_api_mapping.get("subject"): subject,
-            "notify": notify,
-        }
+    def create(
+        self,
+        _type: str = None,
+        _links: dict = None,
+        subject: str = None,
+        description: str = None,
+        scheduleManually: bool = None,
+        readonly: bool = None,
+        startDate: str = None,
+        dueDate: str = None,
+        derivedStartDate: str = None,
+        derivedDueDate: str = None,
+        estimatedTime: str = None,
+        derivedEstimatedTime: str = None,
+        percentageDone: int = None,
+        customField1: str = None,
+        customField2: str = None,
+        createdAt: str = None,
+        updatedAt: str = None,
+        **kwargs,
+    ):
+        if _links is None and kwargs:
+            _links = kwargs
+
+        data = self._process_data(locals())
+        return self.client._send_request("POST", "/work_packages", data=data)
+
+    def update(
+        self,
+        id: int,
+        _type: str = None,
+        _links: dict = None,
+        subject: str = None,
+        description: str = None,
+        scheduleManually: bool = None,
+        readonly: bool = None,
+        startDate: str = None,
+        dueDate: str = None,
+        derivedStartDate: str = None,
+        derivedDueDate: str = None,
+        estimatedTime: str = None,
+        derivedEstimatedTime: str = None,
+        percentageDone: int = None,
+        customField1: str = None,
+        customField2: str = None,
+        createdAt: str = None,
+        updatedAt: str = None,
+        **kwargs,
+    ):
+        if _links is None and kwargs:
+            _links = kwargs
+
+        data = self._process_data(locals())
+        data.pop("id")
         return self.client._send_request(
             "PATCH", f"/work_packages/{id}", data=data
         ).json()
 
     def delete(self, id: int):
-        return self.client._send_request("DELETE", f"/work_packages/{id}").text
+        return self.client._send_request("DELETE", f"/work_packages/{id}")
