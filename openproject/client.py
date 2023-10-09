@@ -41,10 +41,6 @@ class Client:
         url = f"{self.base_url}/api/{self.api_version}/{endpoint}"
         with httpx.Client(auth=("apikey", self.api_token)) as client:
             headers = {"Content-Type": "application/json"}
-
-            import pdb
-
-            pdb.set_trace()
             response = client.request(
                 method, url, params=params, json=data, headers=headers, **kwargs
             )
