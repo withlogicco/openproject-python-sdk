@@ -1,6 +1,6 @@
 import httpx
 from exceptions import APIError, AuthenticationError
-from constants import BASE_URL
+from openproject.types import WorkPackage
 
 
 class Client:
@@ -70,7 +70,15 @@ class WorkPackages(SubClient):
         "custom_field_2": "customField2",
         "created_at": "createdAt",
         "updated_at": "updatedAt",
+        "lock_version": "lockVersion",
     }
+
+    def _api_payload_from_kwargs(self, **kwargs) -> WorkPackage:
+        data = {}
+        for arg, api_arg in self._args_api_mapping.items():
+            if arg in kwargs:
+                data[api_arg] = kwargs[arg]
+        return data
 
     def list(self):
         return self.client._send_request("GET", "/work_packages")
@@ -78,93 +86,13 @@ class WorkPackages(SubClient):
     def view(self, id: int):
         return self.client._send_request("GET", f"/work_packages/{id}")
 
-    def _process_data(self, data):
-        data = {
-            k: v
-            for k, v in data.items()
-            if v is not None and k != "self" and k != "kwargs"
-        }
-        return data
-
-    def create(
-        self,
-        _links: dict = None,
-        subject: str = None,
-        description: str = None,
-        schedule_manually: bool = None,
-        readonly: bool = None,
-        start_date: str = None,
-        due_date: str = None,
-        derived_start_date: str = None,
-        derived_due_date: str = None,
-        estimated_time: str = None,
-        derived_estimated_time: str = None,
-        percentage_done: int = None,
-        custom_field_1: str = None,
-        custom_field_2: str = None,
-        created_at: str = None,
-        updated_at: str = None,
-        **kwargs,
-    ):
-        if _links is None and kwargs:
-            _links = kwargs
-
-        data = {
-            self._args_api_mapping[k]: v
-            for k, v in locals().items()
-            if v is not None and k != "self" and k != "kwargs"
-        }
-
+    def create(self, **kwargs):
+        data = self._api_payload_from_kwargs(**kwargs)
         return self.client._send_request("POST", "/work_packages", data=data)
 
-    def update(
-        self,
-        id: int,
-        _links: dict = None,
-        subject: str = None,
-        description: str = None,
-        schedule_manually: bool = None,
-        readonly: bool = None,
-        start_date: str = None,
-        due_date: str = None,
-        derived_start_date: str = None,
-        derived_due_date: str = None,
-        estimated_time: str = None,
-        derived_estimated_time: str = None,
-        percentage_done: int = None,
-        custom_field_1: str = None,
-        custom_field_2: str = None,
-        created_at: str = None,
-        updated_at: str = None,
-        **kwargs,
-    ):
-        if _links is None and kwargs:
-            _links = kwargs
-        self._args_api_mapping["id"] = "id"
-        data = {
-            self._args_api_mapping[k]: v
-            for k, v in locals().items()
-            if v is not None and k != "self" and k != "kwargs"
-        }
-        data.pop("id")
-        return self.client._send_request(
-            "PATCH", f"/work_packages/{id}", data=data
-        ).json()
+    def update(self, id: int, **kwargs):
+        data = self._api_payload_from_kwargs(**kwargs)
+        return self.client._send_request("PATCH", f"/work_packages/{id}", data=data)
 
     def delete(self, id: int):
         return self.client._send_request("DELETE", f"/work_packages/{id}")
-
-
-client = Client(
-    BASE_URL, "51de856c3f58f5eca1302305f7f34ce52f87c3224be4eb9c2af0314d29acbb1c"
-)
-work_packages = WorkPackages(client)
-print(
-    work_packages.update(
-        id=1,
-        subject="Test",
-        project={"href": "/api/v3/projects/1"},
-        type={"href": "/api/v3/types/1"},
-        percentage_done=50,
-    )
-)
