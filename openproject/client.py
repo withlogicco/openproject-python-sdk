@@ -74,10 +74,8 @@ class WorkPackages(SubClient):
     }
 
     def _api_payload_from_kwargs(self, **kwargs) -> WorkPackage:
-        data = {}
-        for arg, api_arg in self._args_api_mapping.items():
-            if arg in kwargs:
-                data[api_arg] = kwargs[arg]
+        items = self._args_api_mapping.items()
+        data = {api_args: kwargs[args] for args, api_args in items if args in kwargs}
         return data
 
     def list(self):
