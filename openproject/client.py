@@ -1,5 +1,5 @@
 import httpx
-from exceptions import APIError, AuthenticationError
+from openproject.exceptions import APIError, AuthenticationError
 from openproject.types import WorkPackage
 
 
@@ -74,7 +74,7 @@ class WorkPackages(SubClient):
         "lock_version": "lockVersion",
     }
 
-    def _api_payload_from_kwargs(self, **kwargs) -> WorkPackage:
+    def _api_payload_from_kwargs(self, **kwargs: WorkPackage):
         items = self._args_api_mapping.items()
         data = {api_args: kwargs[args] for args, api_args in items if args in kwargs}
         return data
