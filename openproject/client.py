@@ -11,7 +11,8 @@ class Client:
 
     def _handle_response(self, response: httpx.Response):
         if response.status_code == 401:
-            raise AuthenticationError(response.json()["message"], response.status_code)
+            error = response.json().get("message", "Authentication error")
+            raise AuthenticationError(error, response.status_code)
 
         if response.status_code == 204:
             return None
@@ -30,7 +31,7 @@ class Client:
                     (resp[key] for key in error_message_keys if key in resp), None
                 )
                 if error_message:
-                    error = f"Message: {resp.get('message')} , Error details: {resp.get('errors')}, {resp.get('data')}"
+                    error = f"Message: {error_message} , Error details: {resp.get('errors')}, {resp.get('data')}"
                     raise APIError(error, response)
 
             raise APIError(error, response)
