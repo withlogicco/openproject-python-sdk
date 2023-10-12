@@ -9,6 +9,8 @@ class Client:
         self.api_version = "v3"
         self.api_token = api_token
 
+        self.work_packages = WorkPackages(self)
+
     def _handle_response(self, response: httpx.Response):
         if response.status_code == 401:
             error = response.json().get("message", "Authentication error")
@@ -49,6 +51,8 @@ class Client:
 
 
 class SubClient(Client):
+    client: Client
+
     def __init__(self, client: Client):
         self.client = client
 
