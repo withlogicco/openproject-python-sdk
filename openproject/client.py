@@ -1,6 +1,6 @@
 import httpx
 from openproject.exceptions import APIError, AuthenticationError
-from openproject.types import WorkPackage
+from openproject.types import WorkPackage, Project
 
 
 class Client:
@@ -10,6 +10,7 @@ class Client:
         self.api_token = api_token
 
         self.work_packages = WorkPackages(self)
+        self.projects = Projects(self)
 
     def _handle_response(self, response: httpx.Response):
         if response.status_code == 401:
@@ -99,3 +100,34 @@ class WorkPackages(SubClient):
 
     def delete(self, id: int):
         return self.client._send_request("DELETE", f"/work_packages/{id}")
+
+
+class Projects(SubClient):
+    _args_api_mapping = {
+        "_links": "_links",
+        "name": "name",
+        "status_explanation": "statusExplanation",
+        "description": "description",
+    }
+
+    def _api_payload_from_kwargs(self, **kwargs: Project):
+        items = self._args_api_mapping.items()
+        data = {api_args: kwargs[args] for args, api_args in items if args in kwargs}
+        return data
+
+    def list(self):
+        return self.client._send_request("GET", "/projects")
+
+    def view(self, id: int):
+        return self.client._send_request("GET", f"/projects/{id}")
+
+    def create(self, **kwargs):
+        data = self._api_payload_from_kwargs(**kwargs)
+        return self.client._send_request("POST", "/projects", data=data)
+
+    def update(self, id: int, **kwargs):
+        data = self._api_payload_from_kwargs(**kwargs)
+        return self.client._send_request("PATCH", f"/projects/{id}", data=data)
+
+    def delete(self, id: int):
+        return self.client._send_request("DELETE", f"/projects/{id}")
