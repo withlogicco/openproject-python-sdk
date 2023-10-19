@@ -80,3 +80,16 @@ class WorkPackage(TypedDict, total=False):
     custom_field_2: int
     created_at: str
     updated_at: str
+
+
+class StatusExplanation(TypedDict, total=False):
+    format: str
+    raw: str
+    html: str
+
+
+class Project(TypedDict, total=False):
+    _links: Links
+    name: str
+    status_explanation: StatusExplanation
+    description: Description
