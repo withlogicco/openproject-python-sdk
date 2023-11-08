@@ -11,6 +11,7 @@ class Client:
 
         self.work_packages = WorkPackages(self)
         self.projects = Projects(self)
+        self.statuses = Statuses(self)
 
     def _handle_response(self, response: httpx.Response):
         if response.status_code == 401:
@@ -131,3 +132,11 @@ class Projects(SubClient):
 
     def delete(self, id: int):
         return self.client._send_request("DELETE", f"/projects/{id}")
+
+
+class Statuses(SubClient):
+    def list(self):
+        return self.client._send_request("GET", "/statuses")
+
+    def view(self, id: int):
+        return self.client._send_request("GET", f"/statuses/{id}")
