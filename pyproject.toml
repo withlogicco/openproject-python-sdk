@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openproject"
-version = "0.2.0"
+version = "0.3.0"
 description = "Python SDK for the OpenProject API"
 authors = ["LOGIC <hey@withlogic.co>"]
 license = "MIT"
