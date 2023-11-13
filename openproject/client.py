@@ -86,21 +86,21 @@ class WorkPackages(SubClient):
         return data
 
     def list(self):
-        return self.client._send_request("GET", "/work_packages")
+        return self.client._send_request("GET", "work_packages")
 
     def view(self, id: int):
-        return self.client._send_request("GET", f"/work_packages/{id}")
+        return self.client._send_request("GET", f"work_packages/{id}")
 
     def create(self, **kwargs):
         data = self._api_payload_from_kwargs(**kwargs)
-        return self.client._send_request("POST", "/work_packages", data=data)
+        return self.client._send_request("POST", "work_packages", data=data)
 
     def update(self, id: int, **kwargs):
         data = self._api_payload_from_kwargs(**kwargs)
-        return self.client._send_request("PATCH", f"/work_packages/{id}", data=data)
+        return self.client._send_request("PATCH", f"work_packages/{id}", data=data)
 
     def delete(self, id: int):
-        return self.client._send_request("DELETE", f"/work_packages/{id}")
+        return self.client._send_request("DELETE", f"work_packages/{id}")
 
 
 class Projects(SubClient):
@@ -117,26 +117,26 @@ class Projects(SubClient):
         return data
 
     def list(self):
-        return self.client._send_request("GET", "/projects")
+        return self.client._send_request("GET", "projects")
 
     def view(self, id: int):
-        return self.client._send_request("GET", f"/projects/{id}")
+        return self.client._send_request("GET", f"projects/{id}")
 
     def create(self, **kwargs):
         data = self._api_payload_from_kwargs(**kwargs)
-        return self.client._send_request("POST", "/projects", data=data)
+        return self.client._send_request("POST", "projects", data=data)
 
     def update(self, id: int, **kwargs):
         data = self._api_payload_from_kwargs(**kwargs)
-        return self.client._send_request("PATCH", f"/projects/{id}", data=data)
+        return self.client._send_request("PATCH", f"projects/{id}", data=data)
 
     def delete(self, id: int):
-        return self.client._send_request("DELETE", f"/projects/{id}")
+        return self.client._send_request("DELETE", f"projects/{id}")
 
 
 class Statuses(SubClient):
     def list(self):
-        return self.client._send_request("GET", "/statuses")
+        return self.client._send_request("GET", "statuses")
 
     def view(self, id: int):
-        return self.client._send_request("GET", f"/statuses/{id}")
+        return self.client._send_request("GET", f"statuses/{id}")
