@@ -133,7 +133,7 @@ class Projects(SubClient):
     def delete(self, id: int):
         return self.client._send_request("DELETE", f"projects/{id}")
 
-    def types(self, id: int):
+    def list_types(self, id: int):
         return self.client._send_request("GET", f"projects/{id}/types")
 
 
