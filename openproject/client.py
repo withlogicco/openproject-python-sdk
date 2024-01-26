@@ -1,6 +1,7 @@
 import httpx
 from openproject.exceptions import APIError, AuthenticationError
 from openproject.types import WorkPackage, Project
+import json
 
 
 class Client:
@@ -86,8 +87,12 @@ class WorkPackages(SubClient):
         data = {api_args: kwargs[args] for args, api_args in items if args in kwargs}
         return data
 
-    def list(self):
-        return self.client._send_request("GET", "work_packages")
+    def list(self, project: int | None):
+        params = {}
+        if project:
+            filters = [{"project": {"operator": "=", "values": project}}]
+            params = {"filters": json.dumps(filters)}
+        return self.client._send_request("GET", "work_packages", params=params)
 
     def view(self, id: int):
         return self.client._send_request("GET", f"work_packages/{id}")
